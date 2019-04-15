@@ -21,9 +21,8 @@ namespace models.Migrations
 
             modelBuilder.Entity("models.Data.Building", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
 
                     b.Property<string>("Name");
 
@@ -38,9 +37,8 @@ namespace models.Migrations
 
             modelBuilder.Entity("models.Data.Electric", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
 
                     b.Property<string>("Name");
 
@@ -55,24 +53,27 @@ namespace models.Migrations
 
             modelBuilder.Entity("models.Data.ElectricsByOrganization", b =>
                 {
-                    b.Property<int>("OrganizationId");
+                    b.Property<Guid>("Id");
 
-                    b.Property<int>("ElectricId");
+                    b.Property<Guid?>("ElectricId");
 
-                    b.HasKey("OrganizationId", "ElectricId");
+                    b.Property<Guid?>("OrganizationId");
+
+                    b.HasKey("Id");
 
                     b.HasIndex("ElectricId");
+
+                    b.HasIndex("OrganizationId");
 
                     b.ToTable("ElectricsByOrganization");
                 });
 
             modelBuilder.Entity("models.Data.Lighting", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
 
-                    b.Property<int>("ElectricId");
+                    b.Property<Guid>("ElectricId");
 
                     b.HasKey("Id");
 
@@ -83,9 +84,8 @@ namespace models.Migrations
 
             modelBuilder.Entity("models.Data.Organization", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
 
                     b.Property<string>("Name");
 
@@ -98,19 +98,18 @@ namespace models.Migrations
 
             modelBuilder.Entity("models.Data.Room", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
 
                     b.Property<double>("Area");
 
-                    b.Property<int>("BuildingId");
+                    b.Property<Guid>("BuildingId");
 
                     b.Property<int>("Floor");
 
                     b.Property<int>("Number");
 
-                    b.Property<int>("Type_of_roomId");
+                    b.Property<Guid>("Type_of_roomId");
 
                     b.HasKey("Id");
 
@@ -123,26 +122,29 @@ namespace models.Migrations
 
             modelBuilder.Entity("models.Data.Room_rental", b =>
                 {
-                    b.Property<int>("RoomId");
-
-                    b.Property<int>("OrganizationId");
+                    b.Property<Guid>("Id");
 
                     b.Property<DateTime>("InputDate");
 
+                    b.Property<Guid?>("OrganizationId");
+
                     b.Property<DateTime>("OutputDate");
 
-                    b.HasKey("RoomId", "OrganizationId");
+                    b.Property<Guid?>("RoomId");
+
+                    b.HasKey("Id");
 
                     b.HasIndex("OrganizationId");
+
+                    b.HasIndex("RoomId");
 
                     b.ToTable("Room_rental");
                 });
 
             modelBuilder.Entity("models.Data.Type_of_room", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
 
                     b.Property<string>("Name");
 
@@ -155,13 +157,11 @@ namespace models.Migrations
                 {
                     b.HasOne("models.Data.Electric", "Electric")
                         .WithMany("ElectricsByOrganization")
-                        .HasForeignKey("ElectricId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("ElectricId");
 
                     b.HasOne("models.Data.Organization", "Organization")
                         .WithMany("ElectricsByOrganization")
-                        .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("OrganizationId");
                 });
 
             modelBuilder.Entity("models.Data.Lighting", b =>
@@ -189,13 +189,11 @@ namespace models.Migrations
                 {
                     b.HasOne("models.Data.Organization", "Organization")
                         .WithMany("Room_rentals")
-                        .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("OrganizationId");
 
                     b.HasOne("models.Data.Room", "Room")
                         .WithMany("Room_rentals")
-                        .HasForeignKey("RoomId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("RoomId");
                 });
 #pragma warning restore 612, 618
         }

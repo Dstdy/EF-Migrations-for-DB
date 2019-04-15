@@ -1,10 +1,9 @@
 ﻿using System;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace models.Migrations
 {
-    public partial class M2 : Migration
+    public partial class m1 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -12,8 +11,7 @@ namespace models.Migrations
                 name: "Buildings",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Id = table.Column<Guid>(nullable: false),
                     Name = table.Column<string>(nullable: true),
                     Post = table.Column<string>(nullable: true),
                     Number_of_floors = table.Column<int>(nullable: false)
@@ -27,8 +25,7 @@ namespace models.Migrations
                 name: "Electric",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Id = table.Column<Guid>(nullable: false),
                     Name = table.Column<string>(nullable: true),
                     Power = table.Column<double>(nullable: false),
                     UsingOfDay = table.Column<double>(nullable: false)
@@ -42,8 +39,7 @@ namespace models.Migrations
                 name: "Organizations",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Id = table.Column<Guid>(nullable: false),
                     Name = table.Column<string>(nullable: true),
                     Post = table.Column<string>(nullable: true)
                 },
@@ -56,8 +52,7 @@ namespace models.Migrations
                 name: "Type_of_rooms",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Id = table.Column<Guid>(nullable: false),
                     Name = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
@@ -69,9 +64,8 @@ namespace models.Migrations
                 name: "Lighting",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    ElectricId = table.Column<int>(nullable: false)
+                    Id = table.Column<Guid>(nullable: false),
+                    ElectricId = table.Column<Guid>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -88,37 +82,37 @@ namespace models.Migrations
                 name: "ElectricsByOrganization",
                 columns: table => new
                 {
-                    ElectricId = table.Column<int>(nullable: false),
-                    OrganizationId = table.Column<int>(nullable: false)
+                    Id = table.Column<Guid>(nullable: false),
+                    ElectricId = table.Column<Guid>(nullable: true),
+                    OrganizationId = table.Column<Guid>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ElectricsByOrganization", x => new { x.OrganizationId, x.ElectricId });
+                    table.PrimaryKey("PK_ElectricsByOrganization", x => x.Id);
                     table.ForeignKey(
                         name: "FK_ElectricsByOrganization_Electric_ElectricId",
                         column: x => x.ElectricId,
                         principalTable: "Electric",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_ElectricsByOrganization_Organizations_OrganizationId",
                         column: x => x.OrganizationId,
                         principalTable: "Organizations",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
                 name: "Rooms",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Id = table.Column<Guid>(nullable: false),
                     Number = table.Column<int>(nullable: false),
                     Area = table.Column<double>(nullable: false),
                     Floor = table.Column<int>(nullable: false),
-                    Type_of_roomId = table.Column<int>(nullable: false),
-                    BuildingId = table.Column<int>(nullable: false)
+                    Type_of_roomId = table.Column<Guid>(nullable: false),
+                    BuildingId = table.Column<Guid>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -141,32 +135,38 @@ namespace models.Migrations
                 name: "Room_rental",
                 columns: table => new
                 {
-                    RoomId = table.Column<int>(nullable: false),
-                    OrganizationId = table.Column<int>(nullable: false),
+                    Id = table.Column<Guid>(nullable: false),
                     InputDate = table.Column<DateTime>(nullable: false),
-                    OutputDate = table.Column<DateTime>(nullable: false)
+                    OutputDate = table.Column<DateTime>(nullable: false),
+                    RoomId = table.Column<Guid>(nullable: true),
+                    OrganizationId = table.Column<Guid>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Room_rental", x => new { x.RoomId, x.OrganizationId });
+                    table.PrimaryKey("PK_Room_rental", x => x.Id);
                     table.ForeignKey(
                         name: "FK_Room_rental_Organizations_OrganizationId",
                         column: x => x.OrganizationId,
                         principalTable: "Organizations",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Room_rental_Rooms_RoomId",
                         column: x => x.RoomId,
                         principalTable: "Rooms",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
                 name: "IX_ElectricsByOrganization_ElectricId",
                 table: "ElectricsByOrganization",
                 column: "ElectricId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ElectricsByOrganization_OrganizationId",
+                table: "ElectricsByOrganization",
+                column: "OrganizationId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Lighting_ElectricId",
@@ -177,6 +177,11 @@ namespace models.Migrations
                 name: "IX_Room_rental_OrganizationId",
                 table: "Room_rental",
                 column: "OrganizationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Room_rental_RoomId",
+                table: "Room_rental",
+                column: "RoomId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Rooms_BuildingId",
